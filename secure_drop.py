@@ -64,7 +64,7 @@ class Credentials():
         cred_filename = 'CredFile.ini'
         key = Fernet.generate_key()
         Fernetkey = Fernet(key)
-        Fernetkey.encrypt(__self.password)
+        Fernetkey.encrypt(self.__password)
 
         
 
