@@ -7,6 +7,7 @@ import ctypes
 import time
 import os
 import sys
+import json
 from pathlib import Path
 
 
@@ -40,7 +41,7 @@ class Credentials():
 
     @email.setter
     def email(self, email):
-        self.__email - email
+        self.__email = email
 
     @property
     def password(self):
@@ -54,16 +55,16 @@ class Credentials():
         del f
 
 
-    def create_cred(self,cred):
+    def create_cred(self):
         """ 
         This function is responsible for encrypting the password and create key file for 
         storing the key and create a credential file with user name and password 
         """
 
         cred_filename = 'CredFile.ini'
-		key = Fernet.generate_key()
-		Fernetkey = Fernet(key)
-		Fernetkey.encrypt(cred.password)
+        key = Fernet.generate_key()
+        Fernetkey = Fernet(key)
+        Fernetkey.encrypt(__self.password)
 
         
 
@@ -99,7 +100,7 @@ def main():
     else:
         print("No users are registered with this client.")
         choice = input("Do you want to register a new user (y/n)?")
-        if choice == 'y' or 'Y':
+        if (choice == 'y') or (choice == 'Y'):
             new_Credential()
 
 
