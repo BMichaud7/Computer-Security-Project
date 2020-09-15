@@ -10,7 +10,7 @@ def main():
   with open(file_path, 'r') as users_file:
     users = json.load(users_file)
 
-    if(not len(users)):
+    if(not len(users)): #check if user exists. Should it check if file exist first?
       print("No users are registered with this client.")
 
       choice = input("Do you want to register a new user (y/n)? ")
@@ -18,7 +18,9 @@ def main():
         pass
         new_user(users, file_path)
       else:
-        print("No users exists") # and file is empty
+        print("Goodbye") # and file is empty
+        sys.exit()
+
         # TODO: stub
 
 
@@ -26,6 +28,9 @@ def main():
       running = True
       while(running):
         # TODO: switch statement that waits for commands
+        email = input("Enter Email Address: ")
+        password = input("Enter Password: ")
+        # Read user from JSON
         print("listener")
 
 
