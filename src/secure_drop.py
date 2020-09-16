@@ -34,17 +34,31 @@ def new_user(users, file_path):
     # except:
     #    print("ERROR: Unable to open ", file_path, " while creating a new user")
 
-
-
+def encrypt_contact(Contacts):
+    #go threw array
+    #key = load_key()
+    #f = Fernet(key)
+    #for all contacts 
+    #encoded_Contacts[i] = Contacts[i].encode()
+    #encrypt_Contacts[i] = f.encrypt(encoded_Contacts[i])
+def deencrypt_contact(Contacts):
+    #go threw array
+    #key = load_key()
+    #f = Fernet(key)
+    #for all contacts 
+    #encoded_Contacts[i] = Contacts[i].encode()
+    #encrypt_Contacts[i] = f.encrypt(encoded_Contacts[i])
 def existing_user(users, file_path):
      with open(file_path, 'r') as users_file:
         key = load_key()
         email = input("Enter Email Address: ")
         attempted = input("Enter Password:")
-        encoded_password = password.encode()
+        encoded_attemptedpassword = attempted.encode()
         f = Fernet(key)
-        encrypt_password = f.encrypt(encoded_password)
-        #load from JSON encrypt_password
+        encrypt_attemptedpassword = f.encrypt(encoded_attemptedpassword)
+        #load from JSON encrypt_password not sure on user=
+        users = json.load(users_file)
+
         if encrypt_password == attempted:
             #decode name and email
         elif expression: #check if email match
@@ -88,11 +102,27 @@ def help():
 
 def add():
     print("# The \"add\" command adds a new contact for the user. If a contact exists, it overwrites \n# the existing details. Note that the email address is used as the user identifier.")
+    #deencrypt_contact()
+    name = input("Enter Full Name: ")
+    email = input("Enter Email Address: ")
+    #Checks if users exist
+    #If it does Replace
+    #If it doesnt make new Contact in array
+    #encrypt_contact()
+
+
+
 def lists():
     print("# The \"list\" command should show only those contacts that satisfy the following conditions -\n# 1. The contact information has been added to this user's contacts.\n# 2. The contact has also added this user's information to their contacts.\n# 3. The contact is online on the user's local network.")
+    #deencrypt_contact()
+    #check contact if  
+    # 1. The contact information has been added to this user's contacts
+    # 2. The contact has also added this user's information to their contacts.
+    # 3. The contact is online on the user's local network.
+
+
 def send():
     print("# The \"send\" command transfers a file to the contact. Note that the contact must receive the\n# following alert and they must approve the transfer. You can save the file to a directory\n# of your choice with the same file name as the transmitted file.\n# Contact",name," ","<",email,">" ,"is sending a file. Accept (y/n)?")
-
 
 def generate_key():
     if path.exists("secret.key")

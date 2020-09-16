@@ -15,7 +15,6 @@ def main():
 
       choice = input("Do you want to register a new user (y/n)? ")
       if (choice == 'y') or (choice == 'Y'):
-        pass
         new_user(users, file_path)
       else:
         print("Goodbye") # and file is empty
