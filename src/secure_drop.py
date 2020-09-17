@@ -1,4 +1,5 @@
 import json
+import hashlib
 from cryptography.fernet import Fernet
 
 def new_user(users, file_path):
@@ -10,7 +11,7 @@ def new_user(users, file_path):
             password = input("Enter Password:")
             re_password = input("Re-enter Password:")
             if password == re_password:
-                users.append({ 'name': encrypt_message(name), 'email': encrypt_message(email), 'password': encrypt_message(password) }) #add contact array
+                users.append({ 'name': encrypt_message(name), 'email': encrypt_message(email), 'password': hashlib.sha256(password.encode()) }) # TODO add contact array
                 json.dump(users, users_file)
                 print"User Registered.")
                 print("Exiting SecureDrop.")
@@ -32,9 +33,9 @@ def existing_user(users, file_path):
         attempted = input("Enter Password:")
         encoded_attemptedpassword = attempted.encode()
         f = Fernet(key)
-        encrypt_attemptedpassword = f.encrypt(encoded_attemptedpassword)
+        encrypt_attemptedpassword = hashlib.sha256(attempted.encode())
         # TODO load from JSON encrypt_password encrypt_email
-        if encrypt_password == encrypt_message(attempted):
+        if encrypt_password == encrypt_attemptedpassword:
             # TODO decode name and email
             if encrypt_message(attemptedEmail) == encrypt_email: #check if email match
                 # TODO decrypt all 
@@ -99,7 +100,6 @@ def lists():
     # 1. The contact information has been added to this user's contacts
     # 2. The contact has also added this user's information to their contacts.
     # 3. The contact is online on the user's local network.
-    # encrypt_contact()
 
 def send():
     print("# The \"send\" command transfers a file to the contact. Note that the contact must receive the\n# following alert and they must approve the transfer. You can save the file to a directory\n# of your choice with the same file name as the transmitted file.\n# Contact",name," ","<",email,">" ,"is sending a file. Accept (y/n)?")
@@ -145,7 +145,6 @@ def deencrypt_contact(Contacts):
     #return deencrypt_contact
 def encrypt_JSON(userfile,user):
     # TODO
-
     # encrypt_contact(Contacts)
     # encrypt_user from user object
     #save JSON from file
