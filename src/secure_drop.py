@@ -10,17 +10,7 @@ def new_user(users, file_path):
             password = input("Enter Password:")
             re_password = input("Re-enter Password:")
             if password == re_password:
-                generate_key()
-                key = load_key()
-                encoded_password = password.encode()
-                f = Fernet(key)
-                encrypt_password = f.encrypt(encoded_password)
-                encoded_email = email.encode()
-                encrypt_email = f.encrypt(encoded_password)
-                encoded_name = name.encode()
-                encrypt_name = f.encrypt(encoded_password)
-
-                users.append({ 'name': encrypt_name, 'email': encrypt_email, 'password': encrypt_password }) #add contact array
+                users.append({ 'name': encrypt_message(name), 'email': encrypt_message(email), 'password': encrypt_message(password) }) #add contact array
                 json.dump(users, users_file)
                 print"User Registered.")
                 print("Exiting SecureDrop.")
@@ -34,20 +24,8 @@ def new_user(users, file_path):
     # except:
     #    print("ERROR: Unable to open ", file_path, " while creating a new user")
 
-def encrypt_contact(Contacts):
-    #go threw array
-    #key = load_key()
-    #f = Fernet(key)
-    #for all contacts 
-    #encoded_Contacts[i] = Contacts[i].encode()
-    #encrypt_Contacts[i] = f.encrypt(encoded_Contacts[i])
-def deencrypt_contact(Contacts):
-    #go threw array
-    #key = load_key()
-    #f = Fernet(key)
-    #for all contacts 
-    #encoded_Contacts[i] = Contacts[i].encode()
-    #encrypt_Contacts[i] = f.encrypt(encoded_Contacts[i])
+
+
 def existing_user(users, file_path):
      with open(file_path, 'r') as users_file:
         key = load_key()
@@ -56,13 +34,16 @@ def existing_user(users, file_path):
         encoded_attemptedpassword = attempted.encode()
         f = Fernet(key)
         encrypt_attemptedpassword = f.encrypt(encoded_attemptedpassword)
-        #load from JSON encrypt_password not sure on user=
-        users = json.load(users_file)
-
-        if encrypt_password == attempted:
+        #load from JSON encrypt_password encrypt_email
+        if encrypt_password == encrypt_message(attempted):
             #decode name and email
-        elif expression: #check if email match
-            help()
+            if encrypt_message(attemptedEmail) == encrypt_email: #check if email match
+                #decrypt all 
+                help()
+            else:
+            print("Password or Email Do Not Match what is stored")
+            print("Exiting SecureDrop.")
+            sys.exit()
         else:
             print("Password or Email Do Not Match what is stored")
             print("Exiting SecureDrop.")
@@ -102,34 +83,18 @@ def help():
 
 def add():
     print("# The \"add\" command adds a new contact for the user. If a contact exists, it overwrites \n# the existing details. Note that the email address is used as the user identifier.")
-    #deencrypt_contact()
-    name = input("Enter Full Name: ")
-    email = input("Enter Email Address: ")
-    #Checks if users exist
-    #If it does Replace
-    #If it doesnt make new Contact in array
-    #encrypt_contact()
-
-
-
 def lists():
     print("# The \"list\" command should show only those contacts that satisfy the following conditions -\n# 1. The contact information has been added to this user's contacts.\n# 2. The contact has also added this user's information to their contacts.\n# 3. The contact is online on the user's local network.")
-    #deencrypt_contact()
-    #check contact if  
-    # 1. The contact information has been added to this user's contacts
-    # 2. The contact has also added this user's information to their contacts.
-    # 3. The contact is online on the user's local network.
-
-
 def send():
     print("# The \"send\" command transfers a file to the contact. Note that the contact must receive the\n# following alert and they must approve the transfer. You can save the file to a directory\n# of your choice with the same file name as the transmitted file.\n# Contact",name," ","<",email,">" ,"is sending a file. Accept (y/n)?")
 
-def generate_key():
+
+def generate_keys():
     if path.exists("secret.key")
         print("Key File already exists")
-    key = Fernet.generate_key()
     else:
         with open("secret.key", "wb") as key_file:
+            key = Fernet.generate_key() 
             key_file.write(key)
 def load_key():
     if path.exists("secret.key")
@@ -137,3 +102,22 @@ def load_key():
     else:
         print("Key File does not exist")
         return
+def decrypt_message(encrypted_message):
+    """
+    Decrypts an encrypted message
+    """
+    key = load_key()
+    f = Fernet(key)
+    decrypted_message = f.decrypt(encrypted_message)
+    return decrypted_message
+
+
+def encrypt_message(message):
+    """
+    Encrypts a message
+    """
+    key = load_key()
+    encoded_message = message.encode()
+    f = Fernet(key)
+    encrypted_message = f.encrypt(encoded_message)
+    return encrypted_message
