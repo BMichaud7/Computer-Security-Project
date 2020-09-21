@@ -15,7 +15,13 @@ def new_user(users, file_path):
                 password = input("Enter Password: ")
                 re_password = input("Re-enter Password: ")
                 if password == re_password:
-                    users.append({ 'name': encrypt_message(name), 'email': encrypt_message(email), 'password': hashlib.sha256(password) }) # TODO add contact array
+                    #TODO: add contact array
+                    users.append({
+                        'name': encrypt_message(name),
+                        'email': encrypt_message(email),
+                        'password': hashlib.sha256(password.encode()).hexdigest()
+                    })
+
                     json.dump(users, users_file)
                     print("User Registered.")
                     passwordsMatch = True

@@ -9,26 +9,39 @@ def main():
   # FIXME: not handled if no file exists  Solution: if no file exists new_user
   # FIXME: Handle if empty JSON Solution: if  file is empty  new_user
   #users
+
+  # If file doesn't exists or doesn't have brackets create file and/or add []
+  if not os.path.exists(file_path) or os.path.getsize(file_path) < 2:
+    try:
+      with open(file_path, 'w+') as users_file:
+        users_file.write("[]")
+    except IOError:
+      print("Error:", IOError)
+      print("Couldn't create/format", file_path, "\nExiting...")
+      sys.exit()
+
+  # load users from JSON
   try:
     with open(file_path, 'r') as users_file:
       users = json.load(users_file)  #loading twice, here & in new_user()/existing_user()
   except IOError:
     print("Error:", IOError)
-    print("Couldn't open/create", file_path, "Exiting...")
+    print("Couldn't open/create", file_path, "\nExiting...")
     sys.exit()
 
-  if(not len(users)): #check if user exists. Should it check if file exist first?
-    print("No users are registered with this client.")
-
-    choice = input("Do you want to register a new user (y/n)? ")
+  #if no users exists, ask user to create one
+  if(not len(users)):
+    print("No users exists")
+    choice = input("Would you like to create a new user (y/n)? ")
     if (choice == 'y') or (choice == 'Y'):
       new_user(users, file_path)
     else:
-      print("Exiting Secure Drop") # and file is empty
+      print("At least one user must exists to use Secure Drop")
+      print("Exiting Secure Drop")
       sys.exit()
-
-      # TODO: stub
-
+  else:
+    pass
+    #TODO: login loop here
 
 
     running = True
