@@ -7,8 +7,13 @@ def new_user(users, file_path):
     # FIXME: try catch block is poorly scoped
     # try:
         with open(file_path, 'w') as users_file:
-            name = input("Enter Full Name: ")
-            email = input("Enter Email Address: ")
+            
+
+            key = Fernet.generate_key()
+            fernet_instance = Fernet(key)
+            name = fernet_instance.encrypt(input("Enter Full Name: ").encode('utf-8')).decode('utf-8')
+            email = fernet_instance.encrypt(input("Enter Email Address: ").encode('utf-8')).decode('utf-8')
+
 
             passwordsMatch = False
             while(not passwordsMatch):
@@ -17,8 +22,8 @@ def new_user(users, file_path):
                 if password == re_password:
                     #TODO: add contact array
                     users.append({
-                        'name': encrypt_message(name),
-                        'email': encrypt_message(email),
+                        'name': name,
+                        'email': email,
                         'password': hashlib.sha256(password.encode()).hexdigest()
                     })
 
