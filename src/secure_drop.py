@@ -1,3 +1,4 @@
+import os.path
 import json
 import hashlib
 from cryptography.fernet import Fernet
@@ -8,24 +9,25 @@ def new_user(users, file_path):
         with open(file_path, 'w') as users_file:
             name = input("Enter Full Name: ")
             email = input("Enter Email Address: ")
-            password = input("Enter Password:")
-            re_password = input("Re-enter Password:")
-            if password == re_password:
-                users.append({ 'name': encrypt_message(name), 'email': encrypt_message(email), 'password': hashlib.sha256(password.encode()) }) # TODO add contact array
-                json.dump(users, users_file)
-                print"User Registered.")
-                print("Exiting SecureDrop.")
-                sys.exit()
-            else:
-                print("Passwords Do Not Match")
-                print("Exiting SecureDrop.")
-                sys.exit()
+
+            passwordsMatch = False
+            while(not passwordsMatch):
+                password = input("Enter Password: ")
+                re_password = input("Re-enter Password: ")
+                if password == re_password:
+                    users.append({ 'name': encrypt_message(name), 'email': encrypt_message(email), 'password': hashlib.sha256(password) }) # TODO add contact array
+                    json.dump(users, users_file)
+                    print("User Registered.")
+                    passwordsMatch = True
+                else:
+                    print("\nPasswords don't match, try again:")
+
 
     # except:
     #    print("ERROR: Unable to open ", file_path, " while creating a new user")
 
 
-
+"""
 def existing_user(users, file_path):
      with open(file_path, 'r') as users_file:
         key = load_key()
@@ -38,47 +40,49 @@ def existing_user(users, file_path):
         if encrypt_password == encrypt_attemptedpassword:
             # TODO decode name and email
             if encrypt_message(attemptedEmail) == encrypt_email: #check if email match
-                # TODO decrypt all 
+                # TODO decrypt all
                 help()
             else:
-            print("Password or Email Do Not Match what is stored")
-            print("Exiting SecureDrop.")
-            sys.exit()
+                print("Password or Email Do Not Match what is stored")
+                print("Exiting SecureDrop.")
+                sys.exit()
         else:
             print("Password or Email Do Not Match what is stored")
             print("Exiting SecureDrop.")
             sys.exit()
-            
-            
+"""
 
+"""
 def help():
     print("Welcome to SecureDrop.")
-            help_menu =input("Type \"help\" For Commands.")
-            if help_menu == "help":
-                print("\"add\" -> Add a new contact")
-                print("\"list\" -> List all online contacts")
-                print("\"send\" -> Transfer file to contact")
-                print("\"exit\" -> Exit SecureDrop")
-                choice = input()
-                switch (choice) {
-                    case 1:  choice = "add";
-                            add()
-                            break;
-                    case 2:  choice = "list";
-                            lists()
-                            break;
-                    case 3:  choice = "send";
-                            send()
-                            break;
-                    case 4:  choice = "exit";
-                            print("Exiting SecureDrop.")
-                            sys.exit()
-                            break;
-                    default: choice = "Invalid option";
-                            print("Exiting SecureDrop.")
-                            sys.exit()
-                            break;
+    help_menu=input("Type \"help\" For Commands.")
+    if help_menu == "help":
+        print("\"add\" -> Add a new contact")
+        print("\"list\" -> List all online contacts")
+        print("\"send\" -> Transfer file to contact")
+        print("\"exit\" -> Exit SecureDrop")
+        choice = input()
+        switch (choice)
+        {
+            case "add":
+                add()
+                break;
+            case "list":
+                lists()
+                break;
+            case "send";
+                send()
+                break;
+            case "exit":
+                print("Exiting SecureDrop.")
+                sys.exit()
+                break;
+            default:
+                print(choice, "is an invalid choice, use help for a list of commands")
+                pass
+                break;
         }
+"""
 
 
 def add():
@@ -95,8 +99,8 @@ def add():
 def lists():
     print("# The \"list\" command should show only those contacts that satisfy the following conditions -\n# 1. The contact information has been added to this user's contacts.\n# 2. The contact has also added this user's information to their contacts.\n# 3. The contact is online on the user's local network.")
      # TODO
-    #deencrypt_contact()
-    #check contact if  
+    #decrypt_contact()
+    #check contact if
     # 1. The contact information has been added to this user's contacts
     # 2. The contact has also added this user's information to their contacts.
     # 3. The contact is online on the user's local network.
@@ -106,15 +110,15 @@ def send():
 
 
 def generate_key():
-    if path.exists("secret.key")
+    if os.path.exists("secret.key"):
         print("Key File already exists")
     else:
         # TODO change permissions  of  secret.key
         with open("secret.key", "wb") as key_file:
-            key = Fernet.generate_key() 
+            key = Fernet.generate_key()
             key_file.write(key)
 def load_key():
-    if path.exists("secret.key")
+    if os.path.exists("secret.key"):
         return open("secret.key", "rb").read()
     else:
         print("Key File does not exist")
@@ -134,22 +138,26 @@ def encrypt_message(message):
     return encrypted_message
 
 def encrypt_contact(Contacts):
+    pass
     # TODO
     #go threw array
     #encrypt_contact[i] = encrypt_message(dencrypt_Contact[i])
     #save encrypt_contact to JSON
-def deencrypt_contact(Contacts):
+def decrypt_contact(Contacts):
+    pass
      # TODO
     #go threw array
-    #deencrypt_contact[i] = decrypt_message(encrypt_Contact[i])
-    #return deencrypt_contact
+    #decrypt_contact[i] = decrypt_message(encrypt_Contact[i])
+    #return decrypt_contact
 def encrypt_JSON(userfile,user):
+    pass
     # TODO
     # encrypt_contact(Contacts)
     # encrypt_user from user object
     #save JSON from file
 
 def dencrypt_JSON(userfile):
+    pass
     # TODO
     # get data from JSON contact and user
     # user.contact =  dencrypt_contact(Contacts)
