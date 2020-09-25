@@ -1,37 +1,63 @@
 import os.path
+import sys
 import json
 from secure_drop import *
+import string
+import os, sys, stat
+import subprocess 
+import shutil
 
 file_path = 'users.json'
 
 def main():
-  # FIXME: not handled if no file exists
-  # FIXME: Handle if empty JSON
-  with open(file_path, 'r') as users_file:
-    users = json.load(users_file)
+  # FIXME: not handled if no file exists  Solution: if no file exists new_user
+  # FIXME: Handle if empty JSON Solution: if  file is empty  new_user
+  #users
 
-    if(not len(users)): #check if user exists. Should it check if file exist first?
-      print("No users are registered with this client.")
+  # If file doesn't exists or doesn't have brackets create file and/or add []
+  if not os.path.exists(file_path) or os.path.getsize(file_path) < 2:
+    try:
+      with open(file_path, 'w+') as users_file:
+        users_file.write("[]")
+    except IOError:
+      print("Error:", IOError)
+      print("Couldn't create/format", file_path, "\nExiting...")
+      sys.exit()
 
-      choice = input("Do you want to register a new user (y/n)? ")
-      if (choice == 'y') or (choice == 'Y'):
-        pass
-        new_user(users, file_path)
-      else:
-        print("Goodbye") # and file is empty
-        sys.exit()
+  # load users from JSON
+  try:
+    with open(file_path, 'r') as users_file:
+      users = json.load(users_file)  #loading twice, here & in new_user()/existing_user()
+  except IOError:
+    print("Error:", IOError)
+    print("Couldn't open/create", file_path, "\nExiting...")
+    sys.exit()
 
-        # TODO: stub
-
-
+  #if no users exists, ask user to create one
+  if(not len(users)):
+    print("No users exists")
+    choice = raw_input("Would you like to create a new user (y/n)? ")
+    if (choice == "y") or (choice == "Y"):
+      new_user(users, file_path)
+      setfile(file_path)
+      #print("Yes")
     else:
-      running = True
-      while(running):
-        # TODO: switch statement that waits for commands
-        email = input("Enter Email Address: ")
-        password = input("Enter Password: ")
-        # Read user from JSON
-        print("listener")
+      print("At least one user must exists to use Secure Drop")
+      print("Exiting Secure Drop")
+      sys.exit()
+  else:
+    pass
+    #TODO: login loop here
+    existing_user(users, file_path)
+    running = True
+    #while(running):
+      # TODO: switch statement that waits for commands
+      # Input now handeled in new_user()/existing_user()
+      # email = input("Enter Email Address: ")
+      # password = input("Enter Password: ")
+
+      # Read user from JSON
+     
 
 
 
