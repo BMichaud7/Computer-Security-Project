@@ -2,10 +2,6 @@ import os.path
 import sys
 import json
 from secure_drop import *
-import string
-import os, sys, stat
-import subprocess 
-import shutil
 
 file_path = 'users.json'
 
@@ -36,11 +32,9 @@ def main():
   #if no users exists, ask user to create one
   if(not len(users)):
     print("No users exists")
-    choice = raw_input("Would you like to create a new user (y/n)? ")
-    if (choice == "y") or (choice == "Y"):
+    choice = input("Would you like to create a new user (y/n)? ")
+    if (choice == 'y') or (choice == 'Y'):
       new_user(users, file_path)
-      setfile(file_path)
-      #print("Yes")
     else:
       print("At least one user must exists to use Secure Drop")
       print("Exiting Secure Drop")
@@ -48,16 +42,17 @@ def main():
   else:
     pass
     #TODO: login loop here
-    existing_user(users, file_path)
+
+
     running = True
-    #while(running):
+    while(running):
       # TODO: switch statement that waits for commands
       # Input now handeled in new_user()/existing_user()
       # email = input("Enter Email Address: ")
       # password = input("Enter Password: ")
 
       # Read user from JSON
-     
+      print("listener")
 
 
 
