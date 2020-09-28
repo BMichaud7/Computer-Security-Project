@@ -38,7 +38,7 @@ def main():
     print("No users exists")
     choice = raw_input("Would you like to create a new user (y/n)? ")
     if (choice == "y") or (choice == "Y"):
-      new_user(users, file_path)
+      new_user(file_path)
       setfile(file_path)
       #print("Yes")
     else:
@@ -47,7 +47,8 @@ def main():
       sys.exit()
   else:
     #TODO: login loop here
-    existing_usersusers, file_path)
+    e_user(file_path)
+    existing_users()
     running = True
     #while(running):
       # TODO: switch statement that waits for commands

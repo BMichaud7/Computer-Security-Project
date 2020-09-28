@@ -6,10 +6,9 @@ import os, sys, stat
 import shutil
 import subprocess 
 
-def new_user(users, file_path):
+def new_user(file_path):
     # FIXME: try catch block is poorly scoped
     # try:
-        with open(file_path, 'w') as users_file:
             generate_key()
             key = load_key()
             fernet_instance = Fernet(key)
@@ -20,16 +19,18 @@ def new_user(users, file_path):
                 password = raw_input("Enter Password: ")
                 re_password = raw_input("Re-enter Password: ")
                 if password == re_password:
+                    user={}
+                    user['main'] = []
                     #TODO: add contact array
-                    users.append({
+                    user['main'].append({
                         'name': name,
                         'email': email,
                         'password': hashlib.sha256(password.encode()).hexdigest()
                     })
-
-                    json.dump(users, users_file)
-                    print("User Registered.")
-                    passwordsMatch = True
+                    with open(file_path, 'w') as users_file:
+                        json.dump(user, users_file)
+                        print("User Registered.")
+                        passwordsMatch = True
 
                 else:
                     print("\nPasswords don't match, try again:")
@@ -38,25 +39,31 @@ def new_user(users, file_path):
     # except:
     #    print("ERROR: Unable to open ", file_path, " while creating a new user")
 
-
-
-def existing_user(users, file_path):
-     with open(file_path) as users_file:
+def e_user(file_path):
+    with open(file_path) as users_file:
+        user = json.load(users_file)
         key = load_key()
-        email = raw_input("Enter Email Address: ")
+        attemptedEmail = raw_input("Enter Email Address: ")
         attempted = raw_input("Enter Password:")
         encoded_attemptedpassword = attempted.encode()
         f = Fernet(key)
         encrypt_attemptedpassword = hashlib.sha256(attempted.encode()).hexdigest()
+        for p in user['main']:
+            encrypt_password = p['password']
+            encrypt_email = p['email']
+            encrypt_name = p['name']
         # TODO load from JSON encrypt_password encrypt_email
-        #data = json.load(users_file)
-       # print("Name: ", data['name'])
-       # print("Email: : ", data['email'])
-       # print("Password: ", data['password'])
-        if encrypt_password == encrypt_attemptedpassword:
+        if encrypt_password==encrypt_attemptedpassword:
+            print("Password or Email Do  Match what is stored")
             # TODO decode name and email
-            if encrypt_message(attemptedEmail) == encrypt_email: #check if email match
-                # TODO decrypt all
+            print("encrypt_message(attemptedEmail): ", encrypt_message(attemptedEmail))
+            print("encrypt_email: ", encrypt_email)
+            if attemptedEmail == decrypt_message(encrypt_email): # TODO why is is retureing false? Why is the attemptedEmail dif then encrypt_email
+                #is it some how a diffent key?
+                email = decrypt_message(encrypt_email)
+                name = decrypt_message(encrypt_name)
+                print("Name: ", name)
+                print("Email: ", email)
                 help()
             else:
                 print("Password or Email Do Not Match what is stored")
@@ -66,6 +73,9 @@ def existing_user(users, file_path):
             print("Password or Email Do Not Match what is stored")
             print("Exiting SecureDrop.")
             sys.exit()
+
+def existing_user(file_path):
+    print ("Test")
 
 
 
@@ -125,8 +135,10 @@ def generate_key():
         with open("secret.key", "wb") as key_file:
             key = Fernet.generate_key()
             key_file.write(key)
+            print("key in GEN: ",key)
 def load_key():
     if os.path.exists("secret.key"):
+        print ("Key: ",open("secret.key", "rb").read())
         return open("secret.key", "rb").read()
     else:
         print("Key File does not exist")
@@ -134,8 +146,9 @@ def load_key():
 def decrypt_message(encrypted_message):
     key = load_key()
     f = Fernet(key)
+    print("F in load: ", f)
     decrypted_message = f.decrypt(encrypted_message)
-    return decrypted_message
+    return decrypted_message.decode()
 
 
 def encrypt_message(message):
