@@ -2,23 +2,23 @@ import os.path
 import json
 import hashlib
 from cryptography.fernet import Fernet
+import os, sys, stat 
+import shutil
+import subprocess 
 
 def new_user(users, file_path):
     # FIXME: try catch block is poorly scoped
     # try:
         with open(file_path, 'w') as users_file:
-            
-
-            key = Fernet.generate_key()
+            generate_key()
+            key = load_key()
             fernet_instance = Fernet(key)
-            name = fernet_instance.encrypt(input("Enter Full Name: ").encode('utf-8')).decode('utf-8')
-            email = fernet_instance.encrypt(input("Enter Email Address: ").encode('utf-8')).decode('utf-8')
-
-
+            name = encrypt_message(raw_input("Enter Full Name: "))
+            email = encrypt_message(raw_input("Enter Email Address: "))
             passwordsMatch = False
             while(not passwordsMatch):
-                password = input("Enter Password: ")
-                re_password = input("Re-enter Password: ")
+                password = raw_input("Enter Password: ")
+                re_password = raw_input("Re-enter Password: ")
                 if password == re_password:
                     #TODO: add contact array
                     users.append({
@@ -30,6 +30,7 @@ def new_user(users, file_path):
                     json.dump(users, users_file)
                     print("User Registered.")
                     passwordsMatch = True
+
                 else:
                     print("\nPasswords don't match, try again:")
 
@@ -38,16 +39,20 @@ def new_user(users, file_path):
     #    print("ERROR: Unable to open ", file_path, " while creating a new user")
 
 
-"""
+
 def existing_user(users, file_path):
-     with open(file_path, 'r') as users_file:
+     with open(file_path) as users_file:
         key = load_key()
-        email = input("Enter Email Address: ")
-        attempted = input("Enter Password:")
+        email = raw_input("Enter Email Address: ")
+        attempted = raw_input("Enter Password:")
         encoded_attemptedpassword = attempted.encode()
         f = Fernet(key)
-        encrypt_attemptedpassword = hashlib.sha256(attempted.encode())
+        encrypt_attemptedpassword = hashlib.sha256(attempted.encode()).hexdigest()
         # TODO load from JSON encrypt_password encrypt_email
+        #data = json.load(users_file)
+       # print("Name: ", data['name'])
+       # print("Email: : ", data['email'])
+       # print("Password: ", data['password'])
         if encrypt_password == encrypt_attemptedpassword:
             # TODO decode name and email
             if encrypt_message(attemptedEmail) == encrypt_email: #check if email match
@@ -61,39 +66,31 @@ def existing_user(users, file_path):
             print("Password or Email Do Not Match what is stored")
             print("Exiting SecureDrop.")
             sys.exit()
-"""
 
-"""
+
+
 def help():
     print("Welcome to SecureDrop.")
-    help_menu=input("Type \"help\" For Commands.")
+    help_menu=raw_input("Type \"help\" For Commands.\n#")
     if help_menu == "help":
         print("\"add\" -> Add a new contact")
         print("\"list\" -> List all online contacts")
         print("\"send\" -> Transfer file to contact")
         print("\"exit\" -> Exit SecureDrop")
-        choice = input()
-        switch (choice)
-        {
-            case "add":
-                add()
-                break;
-            case "list":
-                lists()
-                break;
-            case "send";
-                send()
-                break;
-            case "exit":
-                print("Exiting SecureDrop.")
-                sys.exit()
-                break;
-            default:
-                print(choice, "is an invalid choice, use help for a list of commands")
-                pass
-                break;
-        }
-"""
+        choice = raw_input()
+        if choice == "add":
+            add()
+        elif choice == "list":
+            lists()
+        elif choice == "send":
+            send()
+        elif choice == "exit":
+            print("Exiting SecureDrop.")
+            sys.exit()
+        else:
+            print(choice, "is an invalid choice, use help for a list of commands")
+        
+
 
 
 def add():
@@ -133,7 +130,7 @@ def load_key():
         return open("secret.key", "rb").read()
     else:
         print("Key File does not exist")
-        return
+        sys.exit()
 def decrypt_message(encrypted_message):
     key = load_key()
     f = Fernet(key)
@@ -143,9 +140,8 @@ def decrypt_message(encrypted_message):
 
 def encrypt_message(message):
     key = load_key()
-    encoded_message = message.encode()
-    f = Fernet(key)
-    encrypted_message = f.encrypt(encoded_message)
+    fernet_instance = Fernet(key)
+    encrypted_message = fernet_instance.encrypt(message.encode('utf-8')).decode('utf-8')
     return encrypted_message
 
 def encrypt_contact(Contacts):
@@ -175,3 +171,7 @@ def dencrypt_JSON(userfile):
     # encrypt_user
     #save JSON from file
     #return user
+def setfile(file_path):
+    os.chown(file_path, 1000, 1000)
+    subprocess.call(['chmod', '0700', file_path])
+    # TODO check if right permisions
