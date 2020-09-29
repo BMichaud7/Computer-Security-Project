@@ -48,7 +48,6 @@ def main():
   else:
     #TODO: login loop here
     e_user(file_path)
-    existing_users()
     running = True
     #while(running):
       # TODO: switch statement that waits for commands
