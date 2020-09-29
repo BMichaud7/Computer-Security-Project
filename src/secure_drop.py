@@ -25,8 +25,7 @@ def new_user(file_path):
                     user['main'].append({
                         'name': name,
                         'email': email,
-                        'password': hashlib.sha256(password.encode()).hexdigest(),
-                        'contact': []
+                        'password': hashlib.sha256(password.encode()).hexdigest()
                     })
                     with open(file_path, 'w') as users_file:
                         json.dump(user, users_file)
@@ -148,7 +147,7 @@ def decrypt_message(encrypted_message):
     key = load_key()
     f = Fernet(key)
     print("F in load: ", f)
-    decrypted_message = f.decrypt(encrypted_message.decode())
+    decrypted_message = f.decrypt(encrypted_message.encode())
     return decrypted_message
 
 
