@@ -1,5 +1,10 @@
-__pycache__
+# system
 .DS_Store
 
+#pyc
+*/__pycache__
+*/*.pyc
+
 # Data files
-users.json
+src/users.json
+src/secret.key

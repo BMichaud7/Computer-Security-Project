@@ -1,33 +1,24 @@
-from Contact import *
-class Credentials():
+def encrypt_msg(msg, Fernet):
+    return Fernet.encrypt(msg.encode()).decode()
 
-    def __init__(self,name,email,contact):
-        self.__email = email
-        self.__name = name
-        self.__contacts = contact #list of Contacts
-            # getter method 
-    def get_email(self): 
-        return self.__email 
-      
-    # setter method 
-    def set_email(self, email): 
-        self.__email = email 
-            # getter method 
-    def get_name(self): 
-        return self.__name 
-      
-    # setter method 
-    def set_name(self, name): 
-        self.__name = name 
-            # getter method 
-    def get_contact(self): 
-        return self.__contacts 
-      
-    # setter method 
-    def set_contact(self, contacts): 
-        self.__contacts = contacts 
-        
-        
+def decrypt_msg(msg, Fernet):
+    return Fernet.decrypt(msg.encode()).decode()
+
+class User():
+    def __init__(self, user, Fernet):
+        self.__user = user
+        self.__Key = Fernet
+
+    def get_prop(self, prop):
+        if(prop == 'contacts'):
+            return list(map(lambda val:decrypt_msg(val, self.__Key), self.__user['contacts']))
+        else:
+            return decrypt_msg(self.__user[prop], self.__Key)
+
+    def add_contact(self, contact):
+        self.__user['contacts'].append(encrypt_msg(contact, self.__Key))
+        print(self.__user['contacts'])
+
 
 class Contact():
    def __init__(self,name,email):
