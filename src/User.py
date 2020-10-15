@@ -1,3 +1,5 @@
+import os, sys, json
+
 def encrypt_msg(msg, Fernet):
     return Fernet.encrypt(msg.encode()).decode()
 
@@ -5,19 +7,43 @@ def decrypt_msg(msg, Fernet):
     return Fernet.decrypt(msg.encode()).decode()
 
 class User():
-    def __init__(self, user, Fernet):
+    def __init__(self, index, user, users_path, Fernet):
+        self.__index = index
         self.__user = user
+        self.__path = users_path
         self.__Key = Fernet
+
+    def update_file(self):
+        try:
+            with open(self.__path, 'r') as curr_file:
+                users = json.load(curr_file)
+        except IOError:
+            print("Error:", IOError, "\nFailed to read from", self.__path, "\nExiting...")
+
+        try:
+            with open(self.__path, 'w') as curr_file:
+                users[self.__index] = self.__user
+                json.dump(users, curr_file)
+        except IOError:
+            print("Error:", IOError, "\nFailed to write to", self.__path, "\nExiting...")
 
     def get_prop(self, prop):
         if(prop == 'contacts'):
-            return list(map(lambda val:decrypt_msg(val, self.__Key), self.__user['contacts']))
+            return list(map(lambda val:json.loads(decrypt_msg(val, self.__Key)), self.__user['contacts']))
         else:
             return decrypt_msg(self.__user[prop], self.__Key)
 
-    def add_contact(self, contact):
-        self.__user['contacts'].append(encrypt_msg(contact, self.__Key))
-        print(self.__user['contacts'])
+    def add_contact(self):
+        email = input("Enter users Email: ")
+        name = input("Enter users Username: ")
+
+        self.__user['contacts'].append(encrypt_msg(
+                json.dumps({ 'name': name, 'email': email }),
+                self.__Key
+            )
+        )
+
+        self.update_file()
 
 
 class Contact():

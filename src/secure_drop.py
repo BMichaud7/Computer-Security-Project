@@ -83,7 +83,7 @@ def new_user(file_path, users):
     # Write out updated data
     with open(file_path, 'w') as users_file:
         json.dump(users, users_file)
-        print("User Registered")
+        print("User Registered\n")
 
     #TODO: login automatically after registering
 
@@ -93,10 +93,10 @@ def login(users):
     email = input("Enter Email Address: ")
     password = input("Enter Password: ")
 
-    for user in users:
+    for index, user in enumerate(users):
         if email == decrypt_msg(user['email'], Fernet):
             if user['password'] == hashlib.sha256(password.encode()).hexdigest():
-                return User(user, Fernet)
+                return User(index, user, users_path, Fernet)
             else:
                 break
 

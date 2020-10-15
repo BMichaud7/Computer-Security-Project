@@ -22,6 +22,7 @@ def main():
     choice = input("No users exists, Would you like to create a new user (Y/n)? ")
     if (choice == "y") or (choice == "Y"):
       new_user(users_path, users)
+      sys.exit()
     else:
       print("At least one user must exists to use Secure Drop\n", "Exiting Secure Drop")
       sys.exit()
@@ -31,23 +32,28 @@ def main():
 
     # Main Program Loop
     print("\nWelcome to SecureDrop")
-    choice = input('Type "help" For list of commands and "exit" to quit \n#')
+    choice = input('Type "help" For list of commands and "exit" to quit \n> ')
     while(True):
       if choice == "help":
+        print()
         print('"add"  -> Add a new contact')
         print('"list" -> List all online contacts')
         print('"send" -> Transfer file to contact')
         print('"exit" -> Exit SecureDrop')
-        print()
       elif choice == "add":
         # Enter some contact info
-        User.add_contact("Hello2")
+        User.add_contact()
       elif choice == "list":
         contacts = User.get_prop('contacts')
-        if(len(contacts)):
-          print("Contacts:")
+        num_contacts = len(contacts)
+        if num_contacts:
+          if(num_contacts > 1):
+            print(num_contacts, "Contact:")
+          else:
+            print(num_contacts, "Contacts:")
+
           for contact in contacts:
-            print("  -", contact)
+            print("  -", contact['email'])
         else:
           print("No contacts exist")
 
@@ -59,7 +65,7 @@ def main():
       else:
         print(choice, 'is an invalid option, type "help" for a list of commands')
 
-      choice = input("\n# ")
+      choice = input("\n> ")
 
 if __name__ == "__main__":
     main()
