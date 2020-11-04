@@ -36,12 +36,19 @@ class User():
     def add_contact(self):
         email = input("Enter users Email: ")
         name = input("Enter users Username: ")
-
-        self.__user['contacts'].append(encrypt_msg(
-                json.dumps({ 'name': name, 'email': email }),
-                self.__Key
+        contacts = self.get_prop('contacts')
+        found = False
+        for Contact in contacts:
+           if Contact['email'] == email:
+               print("We already have a Contact under that email. We are going to replace their name.")
+               Contact['name'] = name
+               found = True
+        if  not found:
+            self.__user['contacts'].append(encrypt_msg(
+                    json.dumps({ 'name': name, 'email': email }),
+                    self.__Key
+                )
             )
-        )
 
         self.update_file()
 
