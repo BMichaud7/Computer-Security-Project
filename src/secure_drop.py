@@ -1,6 +1,6 @@
 import os, sys, json
 import hashlib
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet,InvalidToken
 import base64
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -75,7 +75,13 @@ def encrypt_msg(msg, Fernet):
     return Fernet.encrypt(msg.encode()).decode()
 
 def decrypt_msg(msg, Fernet):
-    return Fernet.decrypt(msg.encode()).decode()
+    try:
+        result = Fernet.decrypt(msg.encode()).decode()
+        print("Valid Key - Successfully decrypted")
+        return result
+    except InvalidToken as e:
+        print("Invalid Key - Unsuccessfully decrypted")
+        sys.exit()
 
 def new_user(file_path, users):
     name = input("Enter Full Name: ")
@@ -116,7 +122,7 @@ def login(users):
             if user['password'] == hashlib.sha256(hashlib.sha256(password.encode()).hexdigest().encode()).hexdigest():
                 return User(index, user, users_path, Fernet)
             else:
-                print("Password or Email Do Not Match what is stored", "\nExiting Secure Drop"")
+                print("Password or Email Do Not Match what is stored", "\nExiting Secure Drop")
                 sys.exit()
 
     print("Password or Email Do Not Match what is stored", "\nExiting Secure Drop")
