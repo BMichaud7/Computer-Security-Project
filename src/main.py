@@ -2,6 +2,7 @@ import os
 import sys
 import json
 
+
 # Program imports
 from secure_drop import *
 users_path = "users.json"
