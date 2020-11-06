@@ -25,7 +25,7 @@ def set_json(file_path, perm, tag):
         with open(file_path, 'w+') as curr_file:
             curr_file.write(tag)
         if not(os.path.exists(file_path)):
-            chmod(file_path, perm)
+            os.chmod(file_path, perm)
     except IOError:
         print("Error:", IOError, "\nFailed to open", file_path, "\nExiting...")
         sys.exit()

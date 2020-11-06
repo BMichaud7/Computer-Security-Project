@@ -4,7 +4,7 @@ import json
 
 # Program imports
 from secure_drop import *
-
+users_path = "users.json"
 
 def main():
     # If file doesn't exists or doesn't have brackets create file and/or add []
@@ -36,7 +36,10 @@ def main():
         User = login(users)
         # WE are "online" now
         # Main Program Loop
+        
         print("\nWelcome to SecureDrop")
+        #send our key and hash out
+        #check if anyone is send us a file
         choice = input(
             'Type "help" For list of commands and "exit" to quit \n> ')
         while(True):
@@ -50,10 +53,15 @@ def main():
                 # Enter some contact info
                 User.add_contact()
             elif choice == "list":
+                #we are the socket server now
+                #clients are sending us their publickey and hash
+                # for all the uniq hash we do
+                # name, known = User.whoisthis()
                 # check if we have a contact with the email threw network
+                # if known == True we know them
+                # we should also save their public key for sending
+                # User.saveNetworking(public_key,email)
                 # if we do list them
-                # we are the socket server
-                # we get there public key here
                 # User.saveNetworking("PUBKEY","Test")
                 # print(User.getNetworking("Test"))
                 # print(User.hashthiscontact("b", "TEST"))
@@ -76,7 +84,13 @@ def main():
                     print("No contacts exist")
 
             elif choice == "send":
-                send(cred)
+                pass
+                #send(cred)
+                # name = input("Who would you like to send to?")
+                # path = input("What file would you like to send")
+                #User = send(users,name,path)
+
+                pass
             elif choice == "exit":
                 print("Exiting SecureDrop")
                 sys.exit()
