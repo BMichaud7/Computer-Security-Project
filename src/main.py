@@ -1,7 +1,8 @@
 import os
 import sys
 import json
-
+import socket
+import network
 
 # Program imports
 from secure_drop import *
@@ -45,15 +46,37 @@ def main():
             'Type "help" For list of commands and "exit" to quit \n> ')
         while(True):
             if choice == "help":
+                network.weAreHere()
                 print()
                 print('"add"  -> Add a new contact')
                 print('"list" -> List all online contacts')
                 print('"send" -> Transfer file to contact')
                 print('"exit" -> Exit SecureDrop')
-            elif choice == "add":
+            elif choice == "add": 
+                network.weAreHere()  
                 # Enter some contact info
                 User.add_contact()
             elif choice == "list":
+                network.weAreHere() 
+                client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) #UDP
+
+                client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
+
+                #enable broadcasting
+                client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST,1)
+                client.settimeout(30.0)
+                client.bind(("", 37020))
+                amTru = True
+                while amTru:
+                    print("Searching for online contacts. This will take up to 30 seconds...\n")
+                    try:
+                        data, addr = client.recvfrom(1024)
+                        print("received message: %s"%data)
+                    except socket.timeout:
+                        print("Online Contacts: 0\n")
+                    amTru = False
+
+                    
                 #we are the socket server now
                 #clients are sending us their publickey and hash
                 # for all the uniq hash we do
@@ -70,7 +93,7 @@ def main():
                 #     "TEST", User.hashthiscontact("b", "TEST"))
                 # print(name)
                 contacts = User.get_prop('contacts')
-
+                network.weAreHere() 
                 num_contacts = len(contacts)
                 if num_contacts:
                     if(num_contacts > 1):
@@ -85,6 +108,7 @@ def main():
                     print("No contacts exist")
 
             elif choice == "send":
+                network.weAreHere() 
                 pass
                 #send(cred)
                 # name = input("Who would you like to send to?")
