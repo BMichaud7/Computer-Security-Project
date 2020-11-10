@@ -19,5 +19,5 @@ def weAreHere():
 
     amTru = True
     while amTru:
-        server.sendto(User.getNetworking, ('<broadcast>', 37020))
+        server.sendto(message, ('<broadcast>', 37020))
         amTru = False
