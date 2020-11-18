@@ -3,10 +3,18 @@ import sys
 import json
 import socket
 import network
-
+import pickle
 # Program imports
 from secure_drop import *
+from multiprocessing import Process
+import time
 users_path = "users.json"
+
+
+def infiniteping(email):
+    while(1):
+        network.weAreHere(email, "hi")
+        time.sleep(5)
 
 def main():
     # If file doesn't exists or doesn't have brackets create file and/or add []
@@ -35,29 +43,31 @@ def main():
             sys.exit()
     else:
         # Login
-        User = login(users)
+        User, email= login(users)
         # WE are "online" now
         # Main Program Loop
         
         print("\nWelcome to SecureDrop")
         #send our key and hash out
         #check if anyone is send us a file
+        p = Process(target=infiniteping, args=(email,) )
+        p.start()
         choice = input(
             'Type "help" For list of commands and "exit" to quit \n> ')
         while(True):
             if choice == "help":
-                network.weAreHere()
+                network.weAreHere(email, "hi")
                 print()
                 print('"add"  -> Add a new contact')
                 print('"list" -> List all online contacts')
                 print('"send" -> Transfer file to contact')
                 print('"exit" -> Exit SecureDrop')
             elif choice == "add": 
-                network.weAreHere()  
+                network.weAreHere(email, "hi")  
                 # Enter some contact info
                 User.add_contact()
             elif choice == "list":
-                network.weAreHere() 
+                network.weAreHere(email, "hi") 
                 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) #UDP
 
                 client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
@@ -71,7 +81,11 @@ def main():
                     print("Searching for online contacts. This will take up to 30 seconds...\n")
                     try:
                         data, addr = client.recvfrom(1024)
-                        print("received message: %s"%data)
+                        recd = pickle.loads(data)
+                        #print("%s"%recd)
+                        the_hash = recd[2]
+                        the_pub = recd[1]
+                        print(User.whoisthis(the_pub,the_hash))
                     except socket.timeout:
                         print("Online Contacts: 0\n")
                     amTru = False
@@ -93,7 +107,7 @@ def main():
                 #     "TEST", User.hashthiscontact("b", "TEST"))
                 # print(name)
                 contacts = User.get_prop('contacts')
-                network.weAreHere() 
+                network.weAreHere(email, "hi") 
                 num_contacts = len(contacts)
                 if num_contacts:
                     if(num_contacts > 1):
@@ -108,7 +122,7 @@ def main():
                     print("No contacts exist")
 
             elif choice == "send":
-                network.weAreHere() 
+                network.weAreHere(email, "hi") 
                 pass
                 #send(cred)
                 # name = input("Who would you like to send to?")
@@ -118,11 +132,15 @@ def main():
                 pass
             elif choice == "exit":
                 print("Exiting SecureDrop")
+                p.terminate()
                 sys.exit()
             else:
                 print(choice, 'is an invalid option, type "help" for a list of commands')
-
+            
+            
             choice = input("\n> ")
+
+
 
 
 if __name__ == "__main__":

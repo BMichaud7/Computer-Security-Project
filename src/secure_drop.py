@@ -117,7 +117,7 @@ def login(users):
     for index, user in enumerate(users):
         if email == decrypt_msg(user['email'], Fernet):
             if user['password'] == hashlib.sha256(hashlib.sha256(password.encode()).hexdigest().encode()).hexdigest():
-                return User(index, user, users_path, Fernet)
+                return User(index, user, users_path, Fernet), email
             else:
                 print("Password or Email Do Not Match what is stored",
                       "\nExiting Secure Drop")
@@ -129,8 +129,8 @@ def login(users):
 
 def keyemail(public_key, email):
     hasher = hashlib.sha256()
-    hasher.update(public_key)
-    hasher.update(email)
+    hasher.update(public_key.encode())
+    hasher.update(email.encode())
     return hasher.hexdigest()
 
 
