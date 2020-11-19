@@ -21,11 +21,14 @@ def decrypt_msg(msg, Fernet):
 
 
 class User():
-    def __init__(self, index, user, users_path, Fernet):
+    def __init__(self, index, user, users_path, Fernet ,email ,public_key ,private__key):
         self.__index = index
         self.__user = user
         self.__path = users_path
         self.__Key = Fernet
+        self.__email = email
+        self.__public_key = public_key
+        self.__private_key = private__key
 
     def update_file(self):
         try:
@@ -51,7 +54,7 @@ class User():
 
     def add_contact(self):
         email = input("Enter users Email: ")
-        name = input("Enter users Username: ")
+        name = input("Enter users Name: ")
         contacts = self.get_prop('contacts')
         public_key = ""
         found = False
@@ -115,6 +118,9 @@ class User():
         for Contact in contacts:
             if Contact['email'] == email:
                 return Contact['public_key']
+
+    def getCred(self):
+        return self.__email, self.__public_key, self.__private_key
 
 
 class Contact():

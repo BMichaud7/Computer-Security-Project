@@ -11,9 +11,9 @@ import time
 users_path = "users.json"
 
 
-def infiniteping(email):
+def infiniteping(email,public_key):
     while(1):
-        network.weAreHere(email, "hi")
+        network.sendping(email, public_key)
         time.sleep(5)
 
 def main():
@@ -43,31 +43,32 @@ def main():
             sys.exit()
     else:
         # Login
-        User, email= login(users)
+        User = login(users)
+        email, public_key, private_key = User.getCred()
         # WE are "online" now
         # Main Program Loop
         
         print("\nWelcome to SecureDrop")
         #send our key and hash out
         #check if anyone is send us a file
-        p = Process(target=infiniteping, args=(email,) )
+        p = Process(target=infiniteping, args=(email,public_key,) )
         p.start()
         choice = input(
             'Type "help" For list of commands and "exit" to quit \n> ')
         while(True):
             if choice == "help":
-                network.weAreHere(email, "hi")
+                # network.weAreHere(email, "hi")
                 print()
                 print('"add"  -> Add a new contact')
                 print('"list" -> List all online contacts')
                 print('"send" -> Transfer file to contact')
                 print('"exit" -> Exit SecureDrop')
             elif choice == "add": 
-                network.weAreHere(email, "hi")  
+                # network.weAreHere(email, "hi")  
                 # Enter some contact info
                 User.add_contact()
             elif choice == "list":
-                network.weAreHere(email, "hi") 
+                # network.weAreHere(email, "hi") 
                 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) #UDP
 
                 client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
@@ -77,6 +78,7 @@ def main():
                 client.settimeout(30.0)
                 client.bind(("", 37020))
                 amTru = True
+                online_contacts = []
                 while amTru:
                     print("Searching for online contacts. This will take up to 30 seconds...\n")
                     try:
@@ -85,11 +87,22 @@ def main():
                         #print("%s"%recd)
                         the_hash = recd[2]
                         the_pub = recd[1]
-                        print(User.whoisthis(the_pub,the_hash))
+                        name , known = User.whoisthis(the_pub,the_hash)
+                        if known:
+                           for names in range(len(online_contacts)):
+                               if online_contacts[names] == name:
+                                   pass
+                               else:
+                                    online_contacts.append(name)
+                                   
+                                    
+                        # print(User.whoisthis(the_pub,the_hash))
                     except socket.timeout:
                         print("Online Contacts: 0\n")
                     amTru = False
-
+                print("Online Contacts: ", len(online_contacts))
+                for names in range(len(online_contacts)):
+                    print(online_contacts[names])
                     
                 #we are the socket server now
                 #clients are sending us their publickey and hash
@@ -107,7 +120,7 @@ def main():
                 #     "TEST", User.hashthiscontact("b", "TEST"))
                 # print(name)
                 contacts = User.get_prop('contacts')
-                network.weAreHere(email, "hi") 
+                # network.weAreHere(email, "hi") 
                 num_contacts = len(contacts)
                 if num_contacts:
                     if(num_contacts > 1):
@@ -122,7 +135,7 @@ def main():
                     print("No contacts exist")
 
             elif choice == "send":
-                network.weAreHere(email, "hi") 
+                # network.weAreHere(email, "hi") 
                 pass
                 #send(cred)
                 # name = input("Who would you like to send to?")

@@ -8,7 +8,7 @@ from main import *
 
 
 
-def weAreHere(email, public_key):
+def sendping(email, public_key):
     server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)

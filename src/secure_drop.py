@@ -12,6 +12,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
 
+
 # Program imports
 from User import *
 
@@ -61,7 +62,7 @@ def encrypt_msg(msg, Fernet):
 def decrypt_msg(msg, Fernet):
     try:
         result = Fernet.decrypt(msg.encode()).decode()
-        print("Valid Key - Successfully decrypted")
+        # print("Valid Key - Successfully decrypted")
         Fernet = None
         del Fernet
         return result
@@ -89,13 +90,19 @@ def new_user(file_path, users):
         key_size=2048,
         backend=default_backend())
     public_key = private_key.public_key()
+    public_key = private_key.public_key().public_bytes(serialization.Encoding.OpenSSH, \
+    serialization.PublicFormat.OpenSSH)
+    pem = private_key.private_bytes(encoding=serialization.Encoding.PEM,
+    format=serialization.PrivateFormat.TraditionalOpenSSL,
+    encryption_algorithm=serialization.NoEncryption())
     # Update struct
     users.append({
         'name': encrypt_msg(name, Fernet),
         'email': encrypt_msg(email, Fernet),
         'password': hashlib.sha256(hashlib.sha256(password.encode()).hexdigest().encode()).hexdigest(),
-        'contacts': []
-
+        'contacts': [],
+        'public_key' : encrypt_msg(public_key.decode('utf-8'), Fernet),
+        'private_key' :  encrypt_msg(pem.decode('utf-8'), Fernet)
     })
     Fernet = None
     password = None
@@ -117,7 +124,9 @@ def login(users):
     for index, user in enumerate(users):
         if email == decrypt_msg(user['email'], Fernet):
             if user['password'] == hashlib.sha256(hashlib.sha256(password.encode()).hexdigest().encode()).hexdigest():
-                return User(index, user, users_path, Fernet), email
+               public_key =  decrypt_msg(user['public_key'],Fernet)
+               private_key = decrypt_msg(user['private_key'],Fernet)
+               return User(index, user, users_path, Fernet, email,public_key, private_key)
             else:
                 print("Password or Email Do Not Match what is stored",
                       "\nExiting Secure Drop")
