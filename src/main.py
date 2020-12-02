@@ -54,6 +54,8 @@ def main():
         print("\nWelcome to SecureDrop")
         #send our key and hash out
         #check if anyone is send us a file
+        network.init_ip()
+        print("OWN_IP: ", network.own_ip)
         p = Process(target=infiniteping, args=(email,public_key,) )
         p.start()
         p1 = Process(target=network.rec,)
@@ -81,7 +83,7 @@ def main():
                 #enable broadcasting
                 client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST,1)
                 client.settimeout(30.0)
-                client.bind(("", 37020))
+                client.bind(("0.0.0.0", 37020))
                 amTru = True
                 online_contacts = []
                 while amTru:
@@ -93,12 +95,24 @@ def main():
                         the_hash = recd[2]
                         the_pub = recd[1]
                         ip = recd[3]
-                        name , known = User.whoisthis(the_pub,the_hash,ip)
-                        if known:
-                           online_contacts.append(name)
-                        else:
-                            pass
-                        online_contacts = list(dict.fromkeys(online_contacts))
+                        timeout = time.time() + 30
+                        while ip == network.own_ip: 
+                            if time.time() > timeout:
+                                break
+                            data, addr = client.recvfrom(1024)
+                            recd = pickle.loads(data)
+                            #print("%s"%recd)
+                            the_hash = recd[2]
+                            the_pub = recd[1]
+                            ip = recd[3]
+                            if ip != network.own_ip:
+                                name , known = User.whoisthis(the_pub,the_hash,ip)
+                                print(name,known)
+                                if known:
+                                    online_contacts.append(name)
+                                else:
+                                    pass
+                                    online_contacts = list(dict.fromkeys(online_contacts))
                                                
                         # print(User.whoisthis(the_pub,the_hash))
                     except socket.timeout:
@@ -139,13 +153,13 @@ def main():
                     print("No contacts exist")
 
             elif choice == "send":
-                name = input("Who would you like to send to?")
-                path = input("What file would you like to send")
+                name = input("Who would you like to send to?\n")
+                path = input("What file would you like to send\n")
                 public_key, ip = User.getNetworking(name)
-                network.send(pub_key,ip,path)
+                network.send(public_key,ip,path)
                 # name = input("Who would you like to send to?")
                 # path = input("What file would you like to send")
-                s.close()
+                
             elif choice == "exit":
                 print("Exiting SecureDrop")
                 p.terminate()

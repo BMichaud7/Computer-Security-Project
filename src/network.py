@@ -3,22 +3,29 @@ import ssl
 import socket
 import time
 import User
+import os
 from secure_drop import *
 from main import *
 
+own_ip = None
+
+def init_ip():
+    global own_ip
+    stream = os.popen('hostname -I')
+    output = stream.read()
+    own_ip = output.strip()
+    print(own_ip)
 
 
 def sendping(email, public_key):
     server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    ip = s.getsockname()[0]
-    s.close()
     server.settimeout(0.2)
     hash1 = keyemail(public_key, email)
-    d = {1:public_key , 2: hash1 , 3: ip}
+    #print("SENDING THIS IP", own_ip)
+    #print("SENDING THIS IP TO CONTACT: ", own_ip)
+    d = {1:public_key , 2: hash1 , 3: own_ip}
 
     msg = pickle.dumps(d)
     #print("Going out:", msg)

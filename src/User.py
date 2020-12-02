@@ -30,6 +30,8 @@ class User():
         self.__public_key = public_key
         self.__private_key = private__key
 
+
+
     def update_file(self):
         try:
             with open(self.__path, 'r') as curr_file:
@@ -74,14 +76,40 @@ class User():
 
         self.update_file()
 
-    def whoisthis(self, public_key, hash,ip):
+    def tempdef(self,pub_key, email, ip):
+        print("IN TEMPDEF")
         contacts = self.get_prop('contacts')
+        contact = False
+        for index in range(len(contacts)):
+            if contacts[index]['email'] == email:
+                contact = contacts[index]
+        if not contact:
+            print("Contact Not Found in saveNetworking")
+        else:
+            contact['public_key'] = pub_key
+            contact['ip'] = ip
+            self.__user['contacts'][index] = encrypt_msg(
+                json.dumps(contact), self.__Key)
+            self.update_file()
+            
+    
+
+    def whoisthis(self, public_key, hash,ip):
+        print("public_key: ", public_key)
+        contacts = self.get_prop('contacts')
+        print("self.get_prop('contacts'): ", self.get_prop('contacts'))
         for Contact in contacts:
             hasher = hashlib.sha256()
             hasher.update(public_key.encode())
             hasher.update(Contact['email'].encode())
+            print("HASH: ", hash, " hasher.hexdigest(): " , hasher.hexdigest())
+            print(hasher.hexdigest() == hash)
+            print(Contact['email'])
             if hasher.hexdigest() == hash:
-                saveNetworking(public_key,Contact['email'],ip)
+                print("BEFORE")
+                self.tempdef(public_key,Contact['email'],ip)
+                print("AFTER")  
+                print("self.get_prop('contacts'): ", self.get_prop('contacts'))
                 return Contact['email'], True
         return "NONE", False
 
@@ -99,21 +127,7 @@ class User():
             print("Not found hashthiscontact")
         self.update_file()
 
-    def saveNetworking(self, pub_key, email,ip):
-        contacts = self.get_prop('contacts')
-        contact = False
-        for index in range(len(contacts)):
-            if contacts[index]['email'] == email:
-                contact = contacts[index]
-
-        if not contact:
-            print("Contact Not Found in saveNetworking")
-        else:
-            contact['public_key'] = pub_key
-            self.__user['contacts'][index] = encrypt_msg(
-                json.dumps(contact), self.__Key)
-            self.update_file()
-
+    
     def getNetworking(self, email):
         contacts = self.get_prop('contacts')
         for Contact in contacts:
