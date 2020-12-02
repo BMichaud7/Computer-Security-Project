@@ -103,6 +103,7 @@ def new_user(file_path, users):
         'contacts': [],
         'public_key' : encrypt_msg(public_key.decode('utf-8'), Fernet),
         'private_key' :  encrypt_msg(pem.decode('utf-8'), Fernet)
+        
     })
     Fernet = None
     password = None

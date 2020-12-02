@@ -8,6 +8,9 @@ import pickle
 from secure_drop import *
 from multiprocessing import Process
 import time
+import socket
+import tqdm
+import os
 users_path = "users.json"
 
 
@@ -53,7 +56,7 @@ def main():
         #check if anyone is send us a file
         p = Process(target=infiniteping, args=(email,public_key,) )
         p.start()
-        p1 = Process(target=rec,)
+        p1 = Process(target=network.rec,)
         p1.start()
         choice = input(
             'Type "help" For list of commands and "exit" to quit \n> ')
@@ -89,15 +92,14 @@ def main():
                         #print("%s"%recd)
                         the_hash = recd[2]
                         the_pub = recd[1]
-                        name , known = User.whoisthis(the_pub,the_hash)
+                        ip = recd[3]
+                        name , known = User.whoisthis(the_pub,the_hash,ip)
                         if known:
-                           for names in range(len(online_contacts)):
-                               if online_contacts[names] == name:
-                                   pass
-                               else:
-                                    online_contacts.append(name)
-                                   
-                                    
+                           online_contacts.append(name)
+                        else:
+                            pass
+                        online_contacts = list(dict.fromkeys(online_contacts))
+                                               
                         # print(User.whoisthis(the_pub,the_hash))
                     except socket.timeout:
                         print("Online Contacts: 0\n")
@@ -137,14 +139,13 @@ def main():
                     print("No contacts exist")
 
             elif choice == "send":
-                # network.weAreHere(email, "hi") 
-                pass
-                #send(cred)
+                name = input("Who would you like to send to?")
+                path = input("What file would you like to send")
+                public_key, ip = User.getNetworking(name)
+                network.send(pub_key,ip,path)
                 # name = input("Who would you like to send to?")
                 # path = input("What file would you like to send")
-                #User = send(users,name,path)
-
-                pass
+                s.close()
             elif choice == "exit":
                 print("Exiting SecureDrop")
                 p.terminate()

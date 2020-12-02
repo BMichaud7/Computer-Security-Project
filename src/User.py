@@ -67,20 +67,21 @@ class User():
         if not found:
             self.__user['contacts'].append(encrypt_msg(
                 json.dumps({'name': name, 'email': email,
-                            'public_key': public_key}),
+                            'public_key': public_key, 'ip': {}}),
                 self.__Key
             )
             )
 
         self.update_file()
 
-    def whoisthis(self, public_key, hash):
+    def whoisthis(self, public_key, hash,ip):
         contacts = self.get_prop('contacts')
         for Contact in contacts:
             hasher = hashlib.sha256()
             hasher.update(public_key.encode())
             hasher.update(Contact['email'].encode())
             if hasher.hexdigest() == hash:
+                saveNetworking(public_key,Contact['email'],ip)
                 return Contact['email'], True
         return "NONE", False
 
@@ -98,7 +99,7 @@ class User():
             print("Not found hashthiscontact")
         self.update_file()
 
-    def saveNetworking(self, pub_key, email):
+    def saveNetworking(self, pub_key, email,ip):
         contacts = self.get_prop('contacts')
         contact = False
         for index in range(len(contacts)):
@@ -117,7 +118,7 @@ class User():
         contacts = self.get_prop('contacts')
         for Contact in contacts:
             if Contact['email'] == email:
-                return Contact['public_key']
+                return Contact['public_key'], Contact['ip']
 
     def getCred(self):
         return self.__email, self.__public_key, self.__private_key
