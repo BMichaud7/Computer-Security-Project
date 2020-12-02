@@ -53,6 +53,8 @@ def main():
         #check if anyone is send us a file
         p = Process(target=infiniteping, args=(email,public_key,) )
         p.start()
+        p1 = Process(target=rec,)
+        p1.start()
         choice = input(
             'Type "help" For list of commands and "exit" to quit \n> ')
         while(True):
@@ -146,6 +148,7 @@ def main():
             elif choice == "exit":
                 print("Exiting SecureDrop")
                 p.terminate()
+                p1.terminate()
                 sys.exit()
             else:
                 print(choice, 'is an invalid option, type "help" for a list of commands')
