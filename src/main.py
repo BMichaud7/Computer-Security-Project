@@ -4,6 +4,7 @@ import json
 import socket
 import network
 import pickle
+from os import path
 # Program imports
 from secure_drop import *
 from multiprocessing import Process
@@ -55,10 +56,10 @@ def main():
         #send our key and hash out
         #check if anyone is send us a file
         network.init_ip()
-        print("OWN_IP: ", network.own_ip)
+        # print("OWN_IP: ", network.own_ip)
         p = Process(target=infiniteping, args=(email,public_key,) )
         p.start()
-        p1 = Process(target=network.rec,)
+        p1 = Process(target=network.rec, args=(User,))
         p1.start()
         choice = input(
             'Type "help" For list of commands and "exit" to quit \n> ')
@@ -95,8 +96,10 @@ def main():
                         the_hash = recd[2]
                         the_pub = recd[1]
                         ip = recd[3]
+                        print("IP REC", ip)
                         timeout = time.time() + 30
                         while ip == network.own_ip: 
+                            print("In Loop")
                             if time.time() > timeout:
                                 break
                             data, addr = client.recvfrom(1024)
@@ -105,14 +108,13 @@ def main():
                             the_hash = recd[2]
                             the_pub = recd[1]
                             ip = recd[3]
-                            if ip != network.own_ip:
-                                name , known = User.whoisthis(the_pub,the_hash,ip)
-                                print(name,known)
-                                if known:
-                                    online_contacts.append(name)
-                                else:
-                                    pass
-                                    online_contacts = list(dict.fromkeys(online_contacts))
+                        name , known = User.whoisthis(the_pub,the_hash,ip)
+                        print(name,known)
+                        if known:
+                            online_contacts.append(name)
+                        else:
+                            pass
+                            online_contacts = list(dict.fromkeys(online_contacts))
                                                
                         # print(User.whoisthis(the_pub,the_hash))
                     except socket.timeout:
@@ -154,12 +156,20 @@ def main():
 
             elif choice == "send":
                 name = input("Who would you like to send to?\n")
-                path = input("What file would you like to send\n")
-                public_key, ip = User.getNetworking(name)
-                network.send(public_key,ip,path)
-                # name = input("Who would you like to send to?")
-                # path = input("What file would you like to send")
-                
+                filetosend = input("What file would you like to send\n")
+                if path.exists(filetosend):
+                    public_key, ip = User.getNetworking(name)
+                    while ip == None:
+                        print("Contact not Found")
+                        name = input("Who would you like to send to?\n")
+                        filetosend = input("What file would you like to send\n")
+                        public_key, ip = User.getNetworking(name)
+
+                    network.send(public_key,ip,filetosend)
+                    # name = input("Who would you like to send to?")
+                    # path = input("What file would you like to send")
+                else:
+                    print("File does not exist")
             elif choice == "exit":
                 print("Exiting SecureDrop")
                 p.terminate()

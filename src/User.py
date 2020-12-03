@@ -92,24 +92,36 @@ class User():
                 json.dumps(contact), self.__Key)
             self.update_file()
             
-    
+    def whoisthisip(self,ip):
+        contacts = self.get_prop('contacts')
+        print ("Contacts: ", contacts)
+        name = None
+        for Contact in contacts:
+            if Contact['ip'] == ip:
+                name = Contact['name']
+        print("DONE WITH LOOP")
+        if name == None:
+            return "Unknown"
+        else:
+            return name
+
 
     def whoisthis(self, public_key, hash,ip):
-        print("public_key: ", public_key)
+        # print("public_key: ", public_key)
         contacts = self.get_prop('contacts')
-        print("self.get_prop('contacts'): ", self.get_prop('contacts'))
+        # print("self.get_prop('contacts'): ", self.get_prop('contacts'))
         for Contact in contacts:
             hasher = hashlib.sha256()
             hasher.update(public_key.encode())
             hasher.update(Contact['email'].encode())
-            print("HASH: ", hash, " hasher.hexdigest(): " , hasher.hexdigest())
-            print(hasher.hexdigest() == hash)
-            print(Contact['email'])
+            # print("HASH: ", hash, " hasher.hexdigest(): " , hasher.hexdigest())
+            # print(hasher.hexdigest() == hash)
+            # print(Contact['email'])
             if hasher.hexdigest() == hash:
-                print("BEFORE")
+                # print("BEFORE")
                 self.tempdef(public_key,Contact['email'],ip)
-                print("AFTER")  
-                print("self.get_prop('contacts'): ", self.get_prop('contacts'))
+                # print("AFTER")  
+                # print("self.get_prop('contacts'): ", self.get_prop('contacts'))
                 return Contact['email'], True
         return "NONE", False
 
@@ -133,6 +145,7 @@ class User():
         for Contact in contacts:
             if Contact['email'] == email:
                 return Contact['public_key'], Contact['ip']
+        return None,None
 
     def getCred(self):
         return self.__email, self.__public_key, self.__private_key
