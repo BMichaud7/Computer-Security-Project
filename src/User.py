@@ -75,22 +75,30 @@ class User():
             )
 
         self.update_file()
+        # print("IN SAVE: ", self.get_prop('contacts'))
 
     def tempdef(self,pub_key, email, ip):
         print("IN TEMPDEF")
+        print(self.get_prop('contacts'))
         contacts = self.get_prop('contacts')
         contact = False
+        foundindex = None
         for index in range(len(contacts)):
             if contacts[index]['email'] == email:
+                foundindex = index
                 contact = contacts[index]
+        print("AFTER LOOP: " , self.get_prop('contacts'))
         if not contact:
             print("Contact Not Found in saveNetworking")
         else:
+            print("CONTACT: ",contact)
             contact['public_key'] = pub_key
             contact['ip'] = ip
-            self.__user['contacts'][index] = encrypt_msg(
+            self.__user['contacts'][foundindex] = encrypt_msg(
                 json.dumps(contact), self.__Key)
+            print("B UPDATE FILE: " , self.get_prop('contacts'))
             self.update_file()
+        print("IN TEMPDEF END: " , self.get_prop('contacts'))
             
     def whoisthisip(self,ip):
         contacts = self.get_prop('contacts')
@@ -109,6 +117,10 @@ class User():
     def whoisthis(self, public_key, hash,ip):
         # print("public_key: ", public_key)
         contacts = self.get_prop('contacts')
+        match = False
+        email = None
+        pub_key = None
+        address = None
         # print("self.get_prop('contacts'): ", self.get_prop('contacts'))
         for Contact in contacts:
             hasher = hashlib.sha256()
@@ -119,11 +131,22 @@ class User():
             # print(Contact['email'])
             if hasher.hexdigest() == hash:
                 # print("BEFORE")
-                self.tempdef(public_key,Contact['email'],ip)
+                # self.tempdef(public_key,Contact['email'],ip)
+                # # print("AFTER")  
+                # # print("self.get_prop('contacts'): ", self.get_prop('contacts'))
+                # return Contact['email'], True
+                match = True
+                pub_key = public_key
+                email = Contact['email']
+                address = ip
+        if match:
+            print("SAVING NAME: ", email )
+            self.tempdef(pub_key,email,address)
                 # print("AFTER")  
                 # print("self.get_prop('contacts'): ", self.get_prop('contacts'))
-                return Contact['email'], True
-        return "NONE", False
+            return email, True
+        else:
+            return "NONE", False
 
     def hashthiscontact(self, email, public_key):
         found = False

@@ -76,6 +76,8 @@ def main():
                 # Enter some contact info
                 User.add_contact()
             elif choice == "list":
+ 
+                print("BEFORE IN LIST : " , User.get_prop('contacts'))
                 # network.weAreHere(email, "hi") 
                 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) #UDP
 
@@ -100,6 +102,7 @@ def main():
                         timeout = time.time() + 30
                         while ip == network.own_ip: 
                             print("In Loop")
+                            print("INLOOP IN LIST : " , User.get_prop('contacts'))
                             if time.time() > timeout:
                                 break
                             data, addr = client.recvfrom(1024)
@@ -108,18 +111,22 @@ def main():
                             the_hash = recd[2]
                             the_pub = recd[1]
                             ip = recd[3]
+                        # print("BEFORE WHOISTHIS : " , User.get_prop('contacts'))
                         name , known = User.whoisthis(the_pub,the_hash,ip)
+                        # print("AFTER WHOISTHIS : " , User.get_prop('contacts'))
                         print(name,known)
+                        # print("BEFORE KNOWN IN LIST : " , User.get_prop('contacts'))
                         if known:
                             online_contacts.append(name)
                         else:
-                            pass
                             online_contacts = list(dict.fromkeys(online_contacts))
-                                               
+                        # print("AFTER KNOWN IN LIST : " , User.get_prop('contacts'))         
                         # print(User.whoisthis(the_pub,the_hash))
                     except socket.timeout:
                         print("Online Contacts: 0\n")
                     amTru = False
+               
+                print("online_contacts: ", online_contacts)
                 print("Online Contacts: ", len(online_contacts))
                 for names in range(len(online_contacts)):
                     print(online_contacts[names])
@@ -140,6 +147,7 @@ def main():
                 #     "TEST", User.hashthiscontact("b", "TEST"))
                 # print(name)
                 contacts = User.get_prop('contacts')
+                # print("CONT: " ,contacts)
                 # network.weAreHere(email, "hi") 
                 num_contacts = len(contacts)
                 if num_contacts:
