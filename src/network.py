@@ -10,7 +10,7 @@ import re
 
 own_ip = None
 
-
+#get own ip 
 def init_ip():
     global own_ip
     stream = os.popen('hostname -I')
@@ -18,7 +18,7 @@ def init_ip():
     own_ip = output.strip()
     # print(own_ip)
 
-
+#calcs ping packet i.e. publickey and email. sends using pickel combines them.
 def sendping(email, public_key):
     server = socket.socket(
         socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
@@ -38,7 +38,7 @@ def sendping(email, public_key):
         server.sendto(msg, ('<broadcast>', 37020))
         amTru = False
 
-
+#checks if new file is tring to be send from contact.
 def rec(User):
     # device's IP address
     SERVER_HOST = "0.0.0.0"

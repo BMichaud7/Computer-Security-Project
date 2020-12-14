@@ -4,7 +4,7 @@ import json
 import hashlib
 from cryptography.fernet import Fernet, InvalidToken
 
-
+#used to encrypt_msg and decrypt_msg
 def encrypt_msg(msg, Fernet):
     return Fernet.encrypt(msg.encode()).decode()
 
@@ -19,7 +19,7 @@ def decrypt_msg(msg, Fernet):
         print("Invalid Key - Unsuccessfully decrypted")
         sys.exit()
 
-
+#user class def
 class User():
     def __init__(self, index, user, users_path, Fernet ,email ,public_key ,private__key):
         self.__index = index
@@ -31,7 +31,7 @@ class User():
         self.__private_key = private__key
 
 
-
+#updates user.json file with new data if changed
     def update_file(self):
         try:
             with open(self.__path, 'r') as curr_file:
@@ -47,13 +47,13 @@ class User():
         except IOError:
             print("Error:", IOError, "\nFailed to write to",
                   self.__path, "\nExiting...")
-
+#returns contact array
     def get_prop(self, prop):
         if(prop == 'contacts'):
             return list(map(lambda val: json.loads(decrypt_msg(val, self.__Key)), self.__user['contacts']))
         else:
             return decrypt_msg(self.__user[prop], self.__Key)
-
+#called to add contact. Checks if contact exits with same eamil. if they do it raplect their name.
     def add_contact(self):
         email = input("Enter users Email: ")
         name = input("Enter users Name: ")
@@ -76,9 +76,9 @@ class User():
 
         self.update_file()
         # print("IN SAVE: ", self.get_prop('contacts'))
-
+#saves networking info based on eami. this is used in list.
     def tempdef(self,pub_key, email, ip):
-        print("IN TEMPDEF")
+        # print("IN TEMPDEF")
         print(self.get_prop('contacts'))
         contacts = self.get_prop('contacts')
         contact = False
@@ -87,19 +87,19 @@ class User():
             if contacts[index]['email'] == email:
                 foundindex = index
                 contact = contacts[index]
-        print("AFTER LOOP: " , self.get_prop('contacts'))
+        # print("AFTER LOOP: " , self.get_prop('contacts'))
         if not contact:
             print("Contact Not Found in saveNetworking")
         else:
-            print("CONTACT: ",contact)
+            # print("CONTACT: ",contact)
             contact['public_key'] = pub_key
             contact['ip'] = ip
             self.__user['contacts'][foundindex] = encrypt_msg(
                 json.dumps(contact), self.__Key)
-            print("B UPDATE FILE: " , self.get_prop('contacts'))
+            # print("B UPDATE FILE: " , self.get_prop('contacts'))
             self.update_file()
-        print("IN TEMPDEF END: " , self.get_prop('contacts'))
-            
+        # print("IN TEMPDEF END: " , self.get_prop('contacts'))
+    #given an ip returns name of contact       
     def whoisthisip(self,ip):
         contacts = self.get_prop('contacts')
         print ("Contacts: ", contacts)
@@ -107,13 +107,13 @@ class User():
         for Contact in contacts:
             if Contact['ip'] == ip:
                 name = Contact['name']
-        print("DONE WITH LOOP")
+        # print("DONE WITH LOOP")
         if name == None:
             return "Unknown"
         else:
             return name
 
-
+#given a ip and public_key and hash returns name of conact. This is used in list
     def whoisthis(self, public_key, hash,ip):
         # print("public_key: ", public_key)
         contacts = self.get_prop('contacts')
@@ -147,7 +147,7 @@ class User():
             return email, True
         else:
             return "NONE", False
-
+    #given wmail and public key makes hash of contact. This is used in list to varify identity of person send packets. 
     def hashthiscontact(self, email, public_key):
         found = False
         contacts = self.get_prop('contacts')
@@ -162,14 +162,14 @@ class User():
             print("Not found hashthiscontact")
         self.update_file()
 
-    
+    #this gets networing info based on the save. This is used in send.
     def getNetworking(self, email):
         contacts = self.get_prop('contacts')
         for Contact in contacts:
             if Contact['email'] == email:
                 return Contact['public_key'], Contact['ip']
         return None,None
-
+    #gets your email public key and private key. 
     def getCred(self):
         return self.__email, self.__public_key, self.__private_key
 

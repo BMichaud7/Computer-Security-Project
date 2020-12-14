@@ -31,7 +31,7 @@ def set_json(file_path, perm, tag):
         print("Error:", IOError, "\nFailed to open", file_path, "\nExiting...")
         sys.exit()
 
-
+# gen kets based on password for user
 def gen_key(password_input):
     password_provided = password_input
     password = password_provided.encode()  # Convert to type bytes
@@ -51,14 +51,15 @@ def gen_key(password_input):
     del password_provided
     del password
     del password_input
+    #deleted password from memory
     gc.collect()
     return Fernet(key)
 
-
+#encrypts message. 
 def encrypt_msg(msg, Fernet):
     return Fernet.encrypt(msg.encode()).decode()
 
-
+#Decrypts message using keys
 def decrypt_msg(msg, Fernet):
     try:
         result = Fernet.decrypt(msg.encode()).decode()
@@ -70,7 +71,7 @@ def decrypt_msg(msg, Fernet):
         print("Invalid Key - Unsuccessfully decrypted")
         sys.exit()
 
-
+#Gets called when new user is detected i.e. no user.json file. Creates keys based on apsswrd and store all users info in user.json
 def new_user(file_path, users):
     name = input("Enter Full Name: ")
     email = input("Enter Email Address: ")
@@ -117,7 +118,7 @@ def new_user(file_path, users):
         json.dump(users, users_file)
         print("User Registered\n")
 
-
+#If not a new user i.e. user.json exits than login. Check if email and password are correct.
 def login(users):
     email = input("Enter Email Address: ")
     password = input("Enter Password: ")
@@ -136,14 +137,14 @@ def login(users):
     print("Password or Email Do Not Match what is stored", "\nExiting Secure Drop")
     sys.exit()
 
-
+#Create hash based on public key and email of current user, you used  for list
 def keyemail(public_key, email):
     hasher = hashlib.sha256()
     hasher.update(public_key.encode())
     hasher.update(email.encode())
     return hasher.hexdigest()
 
-
+#checks if given email and public key equal given hash for list
 def hashcheck(hash, email, public_key):
     if keyemail(public_key, email) == hash:
         return True
